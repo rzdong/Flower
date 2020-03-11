@@ -1,0 +1,15 @@
+{
+  "@@last_modified": "2020-03-10T14:49:11.236169",
+  "weather": "Weather",
+  "@weather": {
+    "description": "this is weather",
+    "type": "text",
+    "placeholders": {}
+  },
+  "content": "content",
+  "@content": {
+    "description": "this is content",
+    "type": "text",
+    "placeholders": {}
+  }
+}

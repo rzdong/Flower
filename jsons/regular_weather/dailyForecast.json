@@ -1,0 +1,21 @@
+{
+  "cond_code_d": "104",
+  "cond_code_n": "305",
+  "cond_txt_d": "阴",
+  "cond_txt_n": "小雨",
+  "date": "2019-06-05",
+  "hum": "57",
+  "pcpn": "0.0",
+  "pop": "0",
+  "pres": "1003",
+  "sr": "04:46",
+  "ss": "19:40",
+  "tmp_max": "28",
+  "tmp_min": "19",
+  "uv_index": "2",
+  "vis": "24",
+  "wind_deg": "204",
+  "wind_dir": "西南风",
+  "wind_sc": "1-2",
+  "wind_spd": "8"
+}

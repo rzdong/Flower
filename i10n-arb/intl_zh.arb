@@ -1,0 +1,15 @@
+{
+  "@@last_modified": "2020-03-10T14:49:11.236169",
+  "weather": "天气",
+  "@weather": {
+    "description": "这是天气",
+    "type": "text",
+    "placeholders": {}
+  },
+  "content": "内容",
+  "@content": {
+    "description": "这是内容",
+    "type": "text",
+    "placeholders": {}
+  }
+}

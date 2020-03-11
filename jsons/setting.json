@@ -1,0 +1,7 @@
+{
+  "language": "",
+  "enableUpdateAtNight": false,
+  "temperatureUnit": "C",
+  "pushWeather": false,
+  "weatherUpdateTime": 0
+}

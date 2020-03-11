@@ -1,0 +1,6 @@
+{
+  "basic": "$basic",
+  "update": "$update",
+  "status": "ok",
+  "hourly": "$[]hourly"
+}
