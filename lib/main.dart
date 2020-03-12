@@ -15,10 +15,10 @@ import 'routes/CityManager.dart';
 import 'routes/Home.dart';
 import 'routes/Settings.dart';
 
-void main() => {
-      WidgetsFlutterBinding.ensureInitialized(),
-      Global.init().then((e) => runApp(MyApp()))
-    };
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  Global.init().then((e) => runApp(MyApp()));
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.

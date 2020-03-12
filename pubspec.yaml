@@ -29,6 +29,7 @@ dependencies:
   dio: ^3.0.9
   bot_toast: ^2.2.1
   intl: ^0.16.0
+  flutter_local_notifications: ^1.2.1
   
 
 dev_dependencies:

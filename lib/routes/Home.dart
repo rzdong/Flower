@@ -2,6 +2,8 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:fluttertest/common/Global.dart';
 import 'package:fluttertest/common/SettingModel.dart';
 import 'package:fluttertest/service/Weather.dart';
 import 'package:fluttertest/widgets/MyIcon.dart';
@@ -22,6 +24,25 @@ class HomeState extends State<Home> {
   void initState() {
     super.initState();
     init();
+    Future.delayed(Duration(seconds: 2), () {
+      _showNotification();
+    });
+  }
+
+  Future _showNotification() async {
+    //安卓的通知配置，必填参数是渠道id, 名称, 和描述, 可选填通知的图标，重要度等等。
+    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+        'your channel id', 'your channel name', 'your channel description',
+        importance: Importance.Max, priority: Priority.High);
+    //IOS的通知配置
+    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
+    var platformChannelSpecifics = new NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    //显示通知，其中 0 代表通知的 id，用于区分通知。
+    Global.context = context;
+    await Global.flutterNotificationShow(
+        0, 'title', 'content', platformChannelSpecifics,
+        payload: "complete", context: context);
   }
 
   Future<void> init() async {
@@ -54,6 +75,7 @@ class HomeState extends State<Home> {
           InkWell(
             onTap: () {
               BotToast.showText(text: "test");
+              _showNotification();
             },
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 15.0),
