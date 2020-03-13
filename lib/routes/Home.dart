@@ -4,10 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fluttertest/common/Global.dart';
-import 'package:fluttertest/common/SettingModel.dart';
 import 'package:fluttertest/service/Weather.dart';
 import 'package:fluttertest/widgets/MyIcon.dart';
-import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   Home(): super();
@@ -16,15 +14,49 @@ class Home extends StatefulWidget {
   HomeState createState() => HomeState();
 }
 
+enum HeaderStatus {
+  hide,
+  showNoBG,
+  showBG
+}
+
 class HomeState extends State<Home> {
 
   dynamic home;
 
+  HeaderStatus statusHeader = HeaderStatus.showNoBG;
+
+  ScrollController _controller = new ScrollController();
+
+  int scrollOffset = 0;
+
+  bool showDialog = false;
+
   @override
   void initState() {
     super.initState();
-    init();
-    Future.delayed(Duration(seconds: 2), () {
+    // init();
+    _controller.addListener(() {
+      int offset = _controller.offset.round();
+      if (offset > scrollOffset) {
+        setState(() {
+          statusHeader = HeaderStatus.hide;
+        });
+      } else if (offset < scrollOffset) {
+        if (offset < 400) {
+          setState(() {
+            statusHeader = HeaderStatus.showNoBG;
+          });
+        } else {
+          setState(() {
+            statusHeader = HeaderStatus.showBG;
+          });
+        }
+      }
+      
+      scrollOffset = offset;
+    });
+    Future.delayed(Duration(seconds: 3), () {
       _showNotification();
     });
   }
@@ -65,53 +97,287 @@ class HomeState extends State<Home> {
 
   }
 
-  @override
-  Widget build(BuildContext context) {
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('hello'),
-        actions: <Widget>[
-          InkWell(
-            onTap: () {
-              BotToast.showText(text: "test");
-              _showNotification();
-            },
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15.0),
-              child: Icon(
-                MyIcon.airplay,
-              ),
-            ),
-          ),
-        ],
-      ),
-      body: Center(
-        child: Column(
-          children: <Widget>[
-            RaisedButton(
-              child: Text('清除language'),
-              onPressed: () {
-                Provider.of<SettingModel>(context, listen: false).language = null;
-              },
-            ),
-            RaisedButton(
-              child: Text('去设置页'),
-              onPressed: () {
-                Navigator.pushNamed(context, 'settings');
-              },
-            ),
-            Text(home ?? ''),
-            Consumer<SettingModel>(
-              builder: (BuildContext context, settingModel, Widget child) {
-                return Text(settingModel.language ?? "null");
-              },
-            )
-            
-          ],
-        ),
-      ),
-    );
+  void showDialogCB() {
+    setState(() {
+      showDialog = true;
+    });
   }
 
+  @override
+  Widget build(BuildContext context) {
+    String str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      color: Color(0xff5d8eea),
+      child: Stack(
+        children: <Widget>[
+          SingleChildScrollView(
+            controller: _controller,
+            child: Center(
+              child: Column(
+                children: str.split("") 
+                  //每一个字母都用一个Text显示,字体为原来的两倍
+                  .map((c) => Text(c, textScaleFactor: 2.0,)) 
+                  .toList(),
+              )
+            )
+          ),
+          AppHeader(status: statusHeader, showDialogCB: showDialogCB),
+
+          showDialog ? GestureDetector(
+            onTap: () {
+              setState(() {
+                showDialog = false;
+              });
+            },
+            child: Container(
+              alignment: Alignment.topRight,
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              padding: EdgeInsets.fromLTRB(0, MediaQuery.of(context).padding.top, 10.0, 0),
+              color: Color(0x55000000),
+              child: Material(child: 
+              
+                Container(
+                  width: 200.0,
+                  padding: EdgeInsets.symmetric(vertical: 10.0),
+                  child: Column(
+
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  ListTile(leading: Text("设置"), onTap: () {
+                    Navigator.pushNamed(context, 'settings');
+                  },),
+                  ListTile(leading: Text("反馈")),
+                  ListTile(leading: Text("分享"))
+                ]
+              ),),)
+            ),
+          ) : Container(),
+        ],
+      ),
+    );
+    
+    // Scaffold(
+    //   appBar: AppBar(
+    //     title: Text('hello'),
+    //     actions: <Widget>[
+    //       InkWell(
+    //         onTap: () {
+    //           BotToast.showText(text: "test");
+    //           _showNotification();
+    //         },
+    //         child: Padding(
+    //           padding: EdgeInsets.symmetric(horizontal: 15.0),
+    //           child: Icon(
+    //             MyIcon.airplay,
+    //           ),
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    //   body: Center(
+    //     child: Column(
+    //       children: <Widget>[
+    //         RaisedButton(
+    //           child: Text('清除language'),
+    //           onPressed: () {
+    //             Provider.of<SettingModel>(context, listen: false).language = null;
+    //           },
+    //         ),
+    //         RaisedButton(
+    //           child: Text('去设置页'),
+    //           onPressed: () {
+    //             Navigator.pushNamed(context, 'settings');
+    //           },
+    //         ),
+    //         Text(home ?? ''),
+    //         Consumer<SettingModel>(
+    //           builder: (BuildContext context, settingModel, Widget child) {
+    //             return Text(settingModel.language ?? "null");
+    //           },
+    //         )
+            
+    //       ],
+    //     ),
+    //   ),
+    // );
+  }
+
+}
+
+final double appHeaderHeight = 48.0;
+
+class AppHeader extends StatefulWidget {
+  AppHeader({
+    Key key,
+    this.status,
+    this.showDialogCB,
+  }): super(key: key);
+
+  final HeaderStatus status;
+  final Function showDialogCB;
+
+  @override
+  AppHeaderState createState() => AppHeaderState();
+}
+class AppHeaderState extends State<AppHeader> {
+
+
+  double opacityLevel = 0;
+  double opacityLevel2 = 0;
+
+  @override
+  void didUpdateWidget(oldWidget){
+    super.didUpdateWidget(oldWidget);
+    switch (widget.status) {
+      case HeaderStatus.showBG:
+        setState(() {
+          opacityLevel = 1.0;
+          opacityLevel2 = 1.0;
+        });
+        break;
+      case HeaderStatus.showNoBG:
+        setState(() {
+          opacityLevel = 0.0;
+          opacityLevel2 = 0.0;
+        });
+        break;
+      case HeaderStatus.hide:
+        setState(() {
+          opacityLevel = 1.0;
+          opacityLevel2 = 1.0;
+        });
+        break;
+      default:
+    }
+    
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double statusBar = MediaQuery.of(context).padding.top;
+    print(widget.status);
+    return Container(
+      width: double.infinity,
+      
+      child: Column(
+        children: <Widget>[
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 100),
+            transitionBuilder: (Widget child, Animation<double> animation) {
+              //执行缩放动画
+              return FadeTransition(child: child, opacity: animation);
+            },
+            child: widget.status == HeaderStatus.hide ? Container(key: ValueKey<int>(3)) : AnimatedOpacity(
+              key: ValueKey<int>(4),
+              duration: Duration(milliseconds: 100),
+              opacity: opacityLevel,
+              child: Container(
+                width: double.infinity,
+                height: statusBar,
+                color: Color(0xff92bff8),
+              )
+            ),
+          ),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 100),
+            transitionBuilder: (Widget child, Animation<double> animation) {
+              //执行缩放动画
+              return FadeTransition(child: child, opacity: animation);
+            },
+            child: widget.status == HeaderStatus.hide ? Container(
+              key: ValueKey<int>(1)
+            ) : Container(
+              key: ValueKey<int>(2),
+              width: double.infinity,
+              height: appHeaderHeight,
+              child: Stack(
+                children: <Widget>[
+                  AnimatedOpacity(
+                    duration: Duration(milliseconds: 100),
+                    opacity: opacityLevel2,
+                    child: Container(
+                      width: double.infinity,
+                      height: appHeaderHeight,
+                      color: Color(0xff92bff8),
+                    )
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(context, "citymanager");
+                        },
+                        child: Container(
+                          width: appHeaderHeight,
+                          height: appHeaderHeight,
+                          alignment: Alignment.center,
+                          child: Icon(MyIcon.plus, color: Colors.white,),
+                        ),
+                      ),
+                      Container(
+                        width: 200,
+                        height: appHeaderHeight,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Text("重庆市 江北区", style: 
+                              TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w300,
+                                decoration: TextDecoration.none
+                              )
+                            ),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                Icon(Icons.cloud_queue, size: 12, color: Colors.white,),
+                                Text('刚刚更新',style: 
+                                  TextStyle(
+                                    color: Colors.white60,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w300,
+                                    decoration: TextDecoration.none
+                                  )
+                                )
+                              ]
+                            )
+                          ],
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          // Navigator.pushNamed(context, "citymanager");
+                          widget.showDialogCB();
+                        },
+                        child: Container(
+                          width: appHeaderHeight,
+                          height: appHeaderHeight,
+                          alignment: Alignment.center,
+                          child: Icon(MyIcon.ellipsis, color: Colors.white,),
+                        ),
+                      )
+                    ]
+                  ),
+                ],
+              )
+              
+              
+            )
+          ),
+          
+        ]
+      )
+      
+      
+      
+      
+    );
+  }
 }

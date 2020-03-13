@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:fluttertest/routes/Language.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +21,15 @@ import 'routes/Settings.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Global.init().then((e) => runApp(MyApp()));
+  if(Platform.isAndroid) {
+
+    SystemUiOverlayStyle systemUiOverlayStyle =
+
+    SystemUiOverlayStyle(statusBarColor: Colors.transparent);
+
+    SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
+
+  }
 }
 
 class MyApp extends StatelessWidget {
