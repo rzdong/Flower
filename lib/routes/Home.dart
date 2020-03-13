@@ -1,4 +1,6 @@
 
+import 'dart:ui';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -105,7 +107,6 @@ class HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    String str = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -116,10 +117,64 @@ class HomeState extends State<Home> {
             controller: _controller,
             child: Center(
               child: Column(
-                children: str.split("") 
-                  //每一个字母都用一个Text显示,字体为原来的两倍
-                  .map((c) => Text(c, textScaleFactor: 2.0,)) 
-                  .toList(),
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  Container(
+                    width: double.infinity,
+                    height: 500,
+                    child: Stack(
+                      children: <Widget>[
+                        Container(
+                          child: Stack(children: <Widget>[
+                            Icon(Icons.cloud, size: 300, color: Colors.white30,),
+                            BackdropFilter(
+                              filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+                              child: Container(
+                                color: Colors.white.withOpacity(0.1),
+                                width: double.infinity,
+                                height: double.infinity,
+                              ),
+                            ),
+                          ],)
+                        ),
+                        
+                        Container(
+                          padding: EdgeInsets.only(top: 90),
+                          width: double.infinity,
+                          child: Column(mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Row(children: <Widget>[
+                              Text("18", style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 50,
+                                fontWeight: FontWeight.w300,
+                                decoration: TextDecoration.none
+                              )),
+                              Column(children: <Widget>[
+                                Text("`C", style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 50,
+                                  fontWeight: FontWeight.w300,
+                                  decoration: TextDecoration.none
+                                )),
+                                Icon(Icons.surround_sound, size: 12, color: Colors.white38,),
+                              ],)
+                            ],),
+                            Text("阴", style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w300,
+                              decoration: TextDecoration.none
+                            ))
+                          ],),
+                        )
+                      ],
+                    ),
+                  )
+                  ,
+                  Container()
+                ],
               )
             )
           ),
