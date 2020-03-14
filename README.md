@@ -9,4 +9,4 @@ flutter run
 和风天气
 
 ## 预览
-![image](./priview.jpg)
+![image](./preview.jpg)
