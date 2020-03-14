@@ -9,6 +9,51 @@ import 'package:fluttertest/common/Global.dart';
 import 'package:fluttertest/service/Weather.dart';
 import 'package:fluttertest/widgets/MyIcon.dart';
 
+
+enum HeaderStatus {
+  hide,
+  showNoBG,
+  showBG
+}
+
+
+
+class TimeType {
+
+  TimeType({
+    @required this.type,
+    @required this.bgColor,
+    @required this.headerColor,
+    @required this.startColor,
+  });
+
+  final String type;
+  final Color bgColor;
+  final Color headerColor;
+  final Color startColor;
+}
+
+class WeatherData {
+  WeatherData({
+    this.icon,
+    this.day,
+    this.weather,
+    this.quality,
+    this.topWeather,
+    this.bottomWeather,
+  });
+  final Icon icon;
+  final String day;
+  final String weather;
+  final String quality;
+  final int topWeather;
+  final int bottomWeather;
+}
+
+
+
+
+
 class Home extends StatefulWidget {
   Home(): super();
 
@@ -16,11 +61,7 @@ class Home extends StatefulWidget {
   HomeState createState() => HomeState();
 }
 
-enum HeaderStatus {
-  hide,
-  showNoBG,
-  showBG
-}
+
 
 class HomeState extends State<Home> {
 
@@ -33,6 +74,21 @@ class HomeState extends State<Home> {
   int scrollOffset = 0;
 
   bool showDialog = false;
+
+  final Map<String, TimeType> timeTypeList = {
+    'morning': TimeType(type: 'morning', bgColor: Color(0xff6d8eea), headerColor: Color(0xffffd2df), startColor: Color(0xffffd0d2)),
+    'noon': TimeType(type: 'noon', bgColor: Color(0xff5d8eea), headerColor: Color(0xff6d8eea), startColor: Color(0xffc2dafd)),
+    'afternoon': TimeType(type: 'afternoon', bgColor: Colors.lime[900], headerColor: Color(0xff92bff8), startColor: Colors.red[400]),
+    'night': TimeType(type: 'night', bgColor: Colors.blueGrey[800], headerColor: Colors.grey[900], startColor: Colors.black),
+  };
+
+  List<WeatherData> weatherList = [
+    WeatherData(icon: Icon(Icons.cloud, color: Colors.white,), day: '今天', weather: '阴', quality: '优', topWeather: 18, bottomWeather: 12),
+    WeatherData(icon: Icon(Icons.grain, color: Colors.white,), day: '明天', weather: '阴转小雨', quality: '优', topWeather: 19, bottomWeather: 12),
+    WeatherData(icon: Icon(Icons.wb_sunny, color: Colors.white,), day: '后天', weather: '晴', quality: '优', topWeather: 17, bottomWeather: 12),
+  ];
+
+  String timeType = 'morning';
 
   @override
   void initState() {
@@ -110,10 +166,11 @@ class HomeState extends State<Home> {
     return Container(
       width: double.infinity,
       height: double.infinity,
-      color: Color(0xff5d8eea),
+      color: timeTypeList[timeType].bgColor,
       child: Stack(
         children: <Widget>[
           SingleChildScrollView(
+            physics: null,
             controller: _controller,
             child: Center(
               child: Column(
@@ -125,19 +182,12 @@ class HomeState extends State<Home> {
                     child: Stack(
                       children: <Widget>[
                         Container(
-                          child: Stack(children: <Widget>[
-                            Icon(Icons.cloud, size: 300, color: Colors.white30,),
-                            BackdropFilter(
-                              filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
-                              child: Container(
-                                color: Colors.white.withOpacity(0.1),
-                                width: double.infinity,
-                                height: double.infinity,
-                              ),
-                            ),
-                          ],)
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter,colors:[timeTypeList[timeType].startColor, timeTypeList[timeType].bgColor])
+                          ),
+                          width: double.infinity,
+                          height: 500,
                         ),
-                        
                         Container(
                           padding: EdgeInsets.only(top: 90),
                           width: double.infinity,
@@ -147,38 +197,179 @@ class HomeState extends State<Home> {
                             Row(children: <Widget>[
                               Text("18", style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 50,
-                                fontWeight: FontWeight.w300,
+                                fontSize: 80,
+                                fontWeight: FontWeight.w800,
                                 decoration: TextDecoration.none
                               )),
-                              Column(children: <Widget>[
-                                Text("`C", style: TextStyle(
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                Text("℃", style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 50,
                                   fontWeight: FontWeight.w300,
                                   decoration: TextDecoration.none
                                 )),
-                                Icon(Icons.surround_sound, size: 12, color: Colors.white38,),
+                                Icon(Icons.music_note, size: 18, color: Colors.white70,),
                               ],)
                             ],),
-                            Text("阴", style: TextStyle(
+                            Padding(padding: EdgeInsets.only(left: 10.0),child: Text("阴", style: TextStyle(
                               color: Colors.white,
                               fontSize: 16,
                               fontWeight: FontWeight.w300,
                               decoration: TextDecoration.none
-                            ))
+                            )),)
                           ],),
                         )
                       ],
                     ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10.0),
+                    width: double.infinity,
+                    child: Column(children: <Widget>[
+                      Row(children: <Widget>[
+                        Expanded(
+                          flex: 1,
+                          child: Center(child: Text('1', style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 25,
+                            fontWeight: FontWeight.w300,
+                            decoration: TextDecoration.none
+                          )
+                        ),),
+                        ),
+                        Container(
+                          height: 16.0,
+                          width: 2.0,
+                          color: Colors.white,
+                        ),
+                        Expanded(
+                          flex: 1,
+                          child: Center(child: Text('1', style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 25,
+                            fontWeight: FontWeight.w300,
+                            decoration: TextDecoration.none
+                          )
+                        ),),
+                        ),
+                      ],),
+                      Container(
+                        margin: EdgeInsets.only(top: 10),
+                        width: double.infinity,
+                        height: 65.0 *4 -15,
+                        decoration: BoxDecoration(
+                          color: Color(0xffffffff).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12.0)
+                        ),
+                        child: Column(
+                          children: [
+                            WeatherItem(watherData: weatherList[0]),
+                            WeatherItem(watherData: weatherList[1]),
+                            WeatherItem(watherData: weatherList[2]),
+                            GestureDetector(
+                              onTap: () {
+                                String type = 'morning';
+                                switch (timeType) {
+                                  case 'morning':
+                                    type = 'noon';
+                                    break;
+                                  case 'noon':
+                                    type = 'afternoon';
+                                    break;
+                                  case 'afternoon':
+                                    type = 'night';
+                                    break;
+                                  case 'night':
+                                    type = 'morning';
+                                    break;
+                                  default:
+                                }
+
+                                setState(() {
+                                  timeType = type;
+                                });
+                              },
+                              child: Container(
+                                alignment: Alignment.center,
+                                height: 45.0,
+                                width: double.infinity,
+                                child: Text('查看更多', style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w300,
+                                    decoration: TextDecoration.none
+                                  )
+                                ),
+                              ),
+                            )
+                          ]
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(top: 10),
+                        width: double.infinity,
+                        height: 65.0 *3,
+                        decoration: BoxDecoration(
+                          color: Color(0xffffffff).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12.0)
+                        ),
+                        child: Column(
+                          children: [
+                            
+                          ]
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(top: 10),
+                        width: double.infinity,
+                        height: 65.0 *3,
+                        decoration: BoxDecoration(
+                          color: Color(0xffffffff).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12.0)
+                        ),
+                        child: Column(
+                          children: [
+                            
+                          ]
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(top: 10),
+                        width: double.infinity,
+                        height: 65.0 *4,
+                        decoration: BoxDecoration(
+                          color: Color(0xffffffff).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12.0)
+                        ),
+                        child: Column(
+                          children: [
+                            
+                          ]
+                        ),
+                      ),
+                      Container(
+                        alignment: Alignment.center,
+                        height: 40.0,
+                        width: double.infinity,
+                        child: Text("—— 到底了 ——", style: 
+                          TextStyle(
+                            color: Colors.white70,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w300,
+                            decoration: TextDecoration.none
+                          )
+                        )
+                      )
+                    ],),
                   )
-                  ,
-                  Container()
                 ],
               )
             )
           ),
-          AppHeader(status: statusHeader, showDialogCB: showDialogCB),
+          AppHeader(status: statusHeader, showDialogCB: showDialogCB, color: timeTypeList[timeType].headerColor),
 
           showDialog ? GestureDetector(
             onTap: () {
@@ -268,10 +459,12 @@ class AppHeader extends StatefulWidget {
   AppHeader({
     Key key,
     this.status,
+    this.color,
     this.showDialogCB,
   }): super(key: key);
 
   final HeaderStatus status;
+  final Color color;
   final Function showDialogCB;
 
   @override
@@ -332,7 +525,7 @@ class AppHeaderState extends State<AppHeader> {
               child: Container(
                 width: double.infinity,
                 height: statusBar,
-                color: Color(0xff92bff8),
+                color: widget.color,
               )
             ),
           ),
@@ -356,7 +549,7 @@ class AppHeaderState extends State<AppHeader> {
                     child: Container(
                       width: double.infinity,
                       height: appHeaderHeight,
-                      color: Color(0xff92bff8),
+                      color: widget.color,
                     )
                   ),
                   Row(
@@ -434,5 +627,69 @@ class AppHeaderState extends State<AppHeader> {
       
       
     );
+  }
+}
+
+class WeatherItem extends StatelessWidget {
+
+  WeatherItem({
+    Key key,
+    this.watherData,
+  }): super(key: key);
+
+  final WeatherData watherData;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 65.0,
+      padding: EdgeInsets.symmetric(horizontal: 20.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Container(
+            height: double.infinity,
+            child: Row(
+              children: <Widget>[
+                watherData.icon,
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 6.0),
+                  child: Text(watherData.day + '·' + watherData.weather, style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w300,
+                    decoration: TextDecoration.none
+                  )),
+                ),
+                Container(
+                  height: 16,
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.symmetric(horizontal: 10.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.0),
+                    color: Colors.white.withOpacity(0.1),
+                  ),
+                  child: Text(watherData.quality, style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 8,
+                    fontWeight: FontWeight.w300,
+                    decoration: TextDecoration.none
+                  ))
+                )
+              ],
+            ),
+          ),
+          Text(watherData.topWeather.toString() + '°' + ' / ' + watherData.bottomWeather.toString() + '°', style: TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w300,
+            decoration: TextDecoration.none
+          )),
+        ]
+      ),
+    );
+    
   }
 }
