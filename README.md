@@ -9,6 +9,4 @@ flutter run
 和风天气
 
 ## 预览
-![image](.)
-
 <img src="./preview.jpg" height="960" width="443" >
