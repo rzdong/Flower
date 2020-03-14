@@ -78,7 +78,7 @@ class HomeState extends State<Home> {
   final Map<String, TimeType> timeTypeList = {
     'morning': TimeType(type: 'morning', bgColor: Color(0xff6d8eea), headerColor: Color(0xffffd2df), startColor: Color(0xffffd0d2)),
     'noon': TimeType(type: 'noon', bgColor: Color(0xff5d8eea), headerColor: Color(0xff6d8eea), startColor: Color(0xffc2dafd)),
-    'afternoon': TimeType(type: 'afternoon', bgColor: Colors.lime[900], headerColor: Color(0xff92bff8), startColor: Colors.red[400]),
+    'afternoon': TimeType(type: 'afternoon', bgColor: Colors.lime[900], headerColor: Colors.orangeAccent[200], startColor: Colors.red[400]),
     'night': TimeType(type: 'night', bgColor: Colors.blueGrey[800], headerColor: Colors.grey[900], startColor: Colors.black),
   };
 
