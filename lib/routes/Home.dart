@@ -214,13 +214,21 @@ class HomeState extends State<Home> {
                       Row(children: <Widget>[
                         Expanded(
                           flex: 1,
-                          child: Center(child: Text('1', style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 25,
-                            fontWeight: FontWeight.w300,
-                            decoration: TextDecoration.none
-                          )
-                        ),),
+                          child: Center(child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                            Padding(padding: EdgeInsets.only(top: 2),child: Icon(Icons.remove_red_eye, color: Colors.white60,size: 16,),),
+                            Padding(padding: EdgeInsets.fromLTRB(8,0,0,0), child: Text('能见度 ' + (now?.now != null ? now.now.vis: '0'), style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w300,
+                              decoration: TextDecoration.none
+                            ),
+
+                        ),)
+                          ],)),
                         ),
                         Container(
                           height: 16.0,
@@ -229,13 +237,21 @@ class HomeState extends State<Home> {
                         ),
                         Expanded(
                           flex: 1,
-                          child: Center(child: Text('1', style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 25,
-                            fontWeight: FontWeight.w300,
-                            decoration: TextDecoration.none
-                          )
-                        ),),
+                          child: Center(child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                            Padding(padding: EdgeInsets.only(top: 2),child: Icon(Icons.grain, color: Colors.white60,size: 16,),),
+                            Padding(padding: EdgeInsets.fromLTRB(8,0,0,0), child: Text('降水量 ' + (now?.now != null ? now.now.pcpn	: '0'), style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w300,
+                              decoration: TextDecoration.none
+                            ),
+
+                        ),)
+                          ],)),
                         ),
                       ],),
                       Container(
@@ -606,7 +622,7 @@ class WeatherItem extends StatelessWidget {
             height: double.infinity,
             child: Row(
               children: <Widget>[
-                weatherType[watherData?.cond_code_d] != null ? weatherType[watherData.cond_code_d] : weatherType["unknown"],
+                weatherType[watherData?.cond_code_d] != null ? weatherType[watherData?.cond_code_d] : weatherType["unknown"],
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 6.0),
                   child: Text((watherData != null ? watherData.date.substring(8)+'日' : '') + '·' + (watherData!= null ? watherData.cond_txt_d : ''), style: TextStyle(
