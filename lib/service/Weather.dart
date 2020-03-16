@@ -5,8 +5,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertest/models/index.dart';
 
 import 'WheatherInterceptor.dart';
+
 
 class Weather {
 
@@ -33,18 +35,27 @@ class Weather {
   }
 
   /// 获取天气
-  Future getWeathre({
+  Future getWeather({
       Map<String, dynamic> query,
+      String type = "now"
     }) async {
     Map<String, dynamic> queryParameters = formatQuery(query);
     print(queryParameters);
     Response r = await dio.get(
-      "/lifestyle",
+      "/" + type,
       queryParameters: queryParameters,
       options: _options,
     );
-    print(r.data);
-    return r.data.toString();
+    return r.data;
+  }
+
+  Future<List<dynamic>> getNowAndForecast({
+    Map<String, dynamic> query,
+  }) async {
+    List r = await Future.wait([getWeather(query: query, type: "now"), getWeather(query: query, type: "forecast")]);
+
+    return [WeatherNow.fromJson(r[0]['HeWeather6'][0]), WeatherForecast.fromJson(r[1]['HeWeather6'][0])];
+    // return r;
   }
 
   /// 格式化参数

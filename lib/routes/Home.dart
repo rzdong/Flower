@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fluttertest/common/Global.dart';
+import 'package:fluttertest/models/index.dart';
 import 'package:fluttertest/service/Weather.dart';
 import 'package:fluttertest/widgets/MyIcon.dart';
 
@@ -33,26 +34,6 @@ class TimeType {
   final Color startColor;
 }
 
-class WeatherData {
-  WeatherData({
-    this.icon,
-    this.day,
-    this.weather,
-    this.quality,
-    this.topWeather,
-    this.bottomWeather,
-  });
-  final Icon icon;
-  final String day;
-  final String weather;
-  final String quality;
-  final int topWeather;
-  final int bottomWeather;
-}
-
-
-
-
 
 class Home extends StatefulWidget {
   Home(): super();
@@ -65,7 +46,8 @@ class Home extends StatefulWidget {
 
 class HomeState extends State<Home> {
 
-  dynamic home;
+  WeatherNow now;
+  WeatherForecast forecast;
 
   HeaderStatus statusHeader = HeaderStatus.showNoBG;
 
@@ -82,18 +64,15 @@ class HomeState extends State<Home> {
     'night': TimeType(type: 'night', bgColor: Colors.blueGrey[800], headerColor: Colors.grey[900], startColor: Colors.black),
   };
 
-  List<WeatherData> weatherList = [
-    WeatherData(icon: Icon(Icons.cloud, color: Colors.white,), day: '今天', weather: '阴', quality: '优', topWeather: 18, bottomWeather: 12),
-    WeatherData(icon: Icon(Icons.grain, color: Colors.white,), day: '明天', weather: '阴转小雨', quality: '优', topWeather: 19, bottomWeather: 12),
-    WeatherData(icon: Icon(Icons.wb_sunny, color: Colors.white,), day: '后天', weather: '晴', quality: '优', topWeather: 17, bottomWeather: 12),
-  ];
+  List<DailyForecast> weatherList = [];
 
   String timeType = 'morning';
 
   @override
   void initState() {
     super.initState();
-    // init();
+
+    init();
     _controller.addListener(() {
       int offset = _controller.offset.round();
       if (offset > scrollOffset) {
@@ -138,10 +117,14 @@ class HomeState extends State<Home> {
   Future<void> init() async {
     BotToast.showLoading(); //弹出一个加载动画
     try {
-      home = await Weather().getWeathre(query: {"location": "重庆"});
-      setState(() {
-        home = home;
-      });
+
+      List weatherLists =  await Weather().getNowAndForecast(query: {"location": "重庆"}); 
+      if (weatherLists.length == 2) {
+        setState(() {
+          now = weatherLists[0] as WeatherNow;
+          forecast = weatherLists[1] as WeatherForecast;
+        });
+      }
     } catch (error) {
       if (error.toString().contains("TIMEOUT")) {
         BotToast.showText(text:"超时，请重试");
@@ -170,7 +153,6 @@ class HomeState extends State<Home> {
       child: Stack(
         children: <Widget>[
           SingleChildScrollView(
-            physics: null,
             controller: _controller,
             child: Center(
               child: Column(
@@ -195,7 +177,7 @@ class HomeState extends State<Home> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Row(children: <Widget>[
-                              Text("18", style: TextStyle(
+                              Text(now?.now?.tmp != null ? now?.now?.tmp : '', style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 80,
                                 fontWeight: FontWeight.w800,
@@ -214,7 +196,7 @@ class HomeState extends State<Home> {
                                 Icon(Icons.music_note, size: 18, color: Colors.white70,),
                               ],)
                             ],),
-                            Padding(padding: EdgeInsets.only(left: 10.0),child: Text("阴", style: TextStyle(
+                            Padding(padding: EdgeInsets.only(left: 10.0),child: Text(now?.now?.cond_txt != null ? now?.now?.cond_txt : '', style: TextStyle(
                               color: Colors.white,
                               fontSize: 16,
                               fontWeight: FontWeight.w300,
@@ -266,9 +248,9 @@ class HomeState extends State<Home> {
                         ),
                         child: Column(
                           children: [
-                            WeatherItem(watherData: weatherList[0]),
-                            WeatherItem(watherData: weatherList[1]),
-                            WeatherItem(watherData: weatherList[2]),
+                            WeatherItem(watherData: forecast?.daily_forecast != null ? forecast?.daily_forecast[0] : null),
+                            WeatherItem(watherData: forecast?.daily_forecast != null ? forecast?.daily_forecast[1] : null),
+                            WeatherItem(watherData: forecast?.daily_forecast != null ? forecast?.daily_forecast[2] : null),
                             GestureDetector(
                               onTap: () {
                                 String type = 'morning';
@@ -404,51 +386,7 @@ class HomeState extends State<Home> {
         ],
       ),
     );
-    
-    // Scaffold(
-    //   appBar: AppBar(
-    //     title: Text('hello'),
-    //     actions: <Widget>[
-    //       InkWell(
-    //         onTap: () {
-    //           BotToast.showText(text: "test");
-    //           _showNotification();
-    //         },
-    //         child: Padding(
-    //           padding: EdgeInsets.symmetric(horizontal: 15.0),
-    //           child: Icon(
-    //             MyIcon.airplay,
-    //           ),
-    //         ),
-    //       ),
-    //     ],
-    //   ),
-    //   body: Center(
-    //     child: Column(
-    //       children: <Widget>[
-    //         RaisedButton(
-    //           child: Text('清除language'),
-    //           onPressed: () {
-    //             Provider.of<SettingModel>(context, listen: false).language = null;
-    //           },
-    //         ),
-    //         RaisedButton(
-    //           child: Text('去设置页'),
-    //           onPressed: () {
-    //             Navigator.pushNamed(context, 'settings');
-    //           },
-    //         ),
-    //         Text(home ?? ''),
-    //         Consumer<SettingModel>(
-    //           builder: (BuildContext context, settingModel, Widget child) {
-    //             return Text(settingModel.language ?? "null");
-    //           },
-    //         )
-            
-    //       ],
-    //     ),
-    //   ),
-    // );
+
   }
 
 }
@@ -637,7 +575,22 @@ class WeatherItem extends StatelessWidget {
     this.watherData,
   }): super(key: key);
 
-  final WeatherData watherData;
+  final DailyForecast watherData;
+
+  Map<String, Widget> weatherType = {
+    "100": Icon(Icons.wb_sunny, color: Colors.white,),
+    "101": Icon(Icons.cloud, color: Colors.white,),
+    "102": Icon(Icons.cloud, color: Colors.white,),
+    "103": Icon(Icons.cloud, color: Colors.white,),
+    "104": Icon(Icons.cloud, color: Colors.white,),
+    "301": Icon(Icons.grain, color: Colors.white,),
+    "302": Icon(Icons.grain, color: Colors.white,),
+    "303": Icon(Icons.grain, color: Colors.white,),
+    "304": Icon(Icons.grain, color: Colors.white,),
+    "305": Icon(Icons.grain, color: Colors.white,),
+    "306": Icon(Icons.grain, color: Colors.white,),
+    "unknown": Icon(Icons.not_interested, color: Colors.white) 
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -653,10 +606,10 @@ class WeatherItem extends StatelessWidget {
             height: double.infinity,
             child: Row(
               children: <Widget>[
-                watherData.icon,
+                weatherType[watherData?.cond_code_d] != null ? weatherType[watherData.cond_code_d] : weatherType["unknown"],
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 6.0),
-                  child: Text(watherData.day + '·' + watherData.weather, style: TextStyle(
+                  child: Text((watherData != null ? watherData.date.substring(8)+'日' : '') + '·' + (watherData!= null ? watherData.cond_txt_d : ''), style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.w300,
@@ -671,7 +624,7 @@ class WeatherItem extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8.0),
                     color: Colors.white.withOpacity(0.1),
                   ),
-                  child: Text(watherData.quality, style: TextStyle(
+                  child: Text('优秀', style: TextStyle(
                     color: Colors.white,
                     fontSize: 8,
                     fontWeight: FontWeight.w300,
@@ -681,7 +634,7 @@ class WeatherItem extends StatelessWidget {
               ],
             ),
           ),
-          Text(watherData.topWeather.toString() + '°' + ' / ' + watherData.bottomWeather.toString() + '°', style: TextStyle(
+          Text((watherData != null ? watherData.tmp_max:'') + '°' + ' / ' + (watherData != null ?watherData.tmp_min:'') + '°', style: TextStyle(
             color: Colors.white,
             fontSize: 16,
             fontWeight: FontWeight.w300,
