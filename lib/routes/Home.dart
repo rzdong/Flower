@@ -1,4 +1,4 @@
-
+import '../extension/extension.dart';
 import 'dart:ui';
 
 import 'package:bot_toast/bot_toast.dart';
@@ -220,14 +220,14 @@ class HomeState extends State<Home> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
                             Padding(padding: EdgeInsets.only(top: 2),child: Icon(Icons.remove_red_eye, color: Colors.white60,size: 16,),),
-                            Padding(padding: EdgeInsets.fromLTRB(8,0,0,0), child: Text('能见度 ' + (now?.now != null ? now.now.vis: '0'), style: TextStyle(
+                            Text('能见度 ' + (now?.now != null ? now.now.vis: '0'), style: TextStyle(
                               color: Colors.white,
                               fontSize: 14,
                               fontWeight: FontWeight.w300,
                               decoration: TextDecoration.none
                             ),
 
-                        ),)
+                        ).setPadding(padding: EdgeInsets.fromLTRB(8,0,0,0)),
                           ],)),
                         ),
                         Container(
@@ -243,14 +243,14 @@ class HomeState extends State<Home> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
                             Padding(padding: EdgeInsets.only(top: 2),child: Icon(Icons.grain, color: Colors.white60,size: 16,),),
-                            Padding(padding: EdgeInsets.fromLTRB(8,0,0,0), child: Text('降水量 ' + (now?.now != null ? now.now.pcpn	: '0'), style: TextStyle(
+                            Text('降水量 ' + (now?.now != null ? now.now.pcpn	: '0'), style: TextStyle(
                               color: Colors.white,
                               fontSize: 14,
                               fontWeight: FontWeight.w300,
                               decoration: TextDecoration.none
                             ),
 
-                        ),)
+                        ).setPadding(padding: EdgeInsets.fromLTRB(8,0,0,0))
                           ],)),
                         ),
                       ],),
@@ -583,7 +583,6 @@ class AppHeaderState extends State<AppHeader> {
     );
   }
 }
-
 class WeatherItem extends StatelessWidget {
 
   WeatherItem({
@@ -593,7 +592,7 @@ class WeatherItem extends StatelessWidget {
 
   final DailyForecast watherData;
 
-  Map<String, Widget> weatherType = {
+  final Map<String, Widget> weatherType = {
     "100": Icon(Icons.wb_sunny, color: Colors.white,),
     "101": Icon(Icons.cloud, color: Colors.white,),
     "102": Icon(Icons.cloud, color: Colors.white,),
