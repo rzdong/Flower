@@ -1,13 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'weatherLifestyle.dart';
+part of 'weatherLifeStyle.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-WeatherLifestyle _$WeatherLifestyleFromJson(Map<String, dynamic> json) {
-  return WeatherLifestyle()
+WeatherLifeStyle _$WeatherLifeStyleFromJson(Map<String, dynamic> json) {
+  return WeatherLifeStyle()
     ..basic = json['basic'] == null
         ? null
         : Basic.fromJson(json['basic'] as Map<String, dynamic>)
@@ -15,12 +15,13 @@ WeatherLifestyle _$WeatherLifestyleFromJson(Map<String, dynamic> json) {
         ? null
         : Update.fromJson(json['update'] as Map<String, dynamic>)
     ..status = json['status'] as String
-    ..lifestyle = json['lifestyle'] == null
-        ? null
-        : Lifestyle.fromJson(json['lifestyle'] as Map<String, dynamic>);
+    ..lifestyle = (json['lifestyle'] as List)
+        ?.map((e) =>
+            e == null ? null : LifeStyle.fromJson(e as Map<String, dynamic>))
+        ?.toList();
 }
 
-Map<String, dynamic> _$WeatherLifestyleToJson(WeatherLifestyle instance) =>
+Map<String, dynamic> _$WeatherLifeStyleToJson(WeatherLifeStyle instance) =>
     <String, dynamic>{
       'basic': instance.basic,
       'update': instance.update,

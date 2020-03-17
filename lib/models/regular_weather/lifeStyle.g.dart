@@ -1,19 +1,19 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'lifestyle.dart';
+part of 'lifeStyle.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-Lifestyle _$LifestyleFromJson(Map<String, dynamic> json) {
-  return Lifestyle()
+LifeStyle _$LifeStyleFromJson(Map<String, dynamic> json) {
+  return LifeStyle()
     ..type = json['type'] as String
     ..brf = json['brf'] as String
     ..txt = json['txt'] as String;
 }
 
-Map<String, dynamic> _$LifestyleToJson(Lifestyle instance) => <String, dynamic>{
+Map<String, dynamic> _$LifeStyleToJson(LifeStyle instance) => <String, dynamic>{
       'type': instance.type,
       'brf': instance.brf,
       'txt': instance.txt

@@ -48,6 +48,8 @@ class HomeState extends State<Home> {
 
   WeatherNow now;
   WeatherForecast forecast;
+  WeatherHourly hourly;
+  WeatherLifeStyle lifestyle;
 
   HeaderStatus statusHeader = HeaderStatus.showNoBG;
 
@@ -63,8 +65,6 @@ class HomeState extends State<Home> {
     'afternoon': TimeType(type: 'afternoon', bgColor: Colors.lime[900], headerColor: Colors.orangeAccent[200], startColor: Colors.red[400]),
     'night': TimeType(type: 'night', bgColor: Colors.blueGrey[800], headerColor: Colors.grey[900], startColor: Colors.black),
   };
-
-  List<DailyForecast> weatherList = [];
 
   String timeType = 'morning';
 
@@ -119,11 +119,15 @@ class HomeState extends State<Home> {
     try {
 
       List weatherLists =  await Weather().getNowAndForecast(query: {"location": "重庆"}); 
-      if (weatherLists.length == 2) {
+      if (weatherLists.length == 4) {
         setState(() {
           now = weatherLists[0] as WeatherNow;
           forecast = weatherLists[1] as WeatherForecast;
+          hourly = weatherLists[2] as WeatherHourly;
+          lifestyle = weatherLists[3] as WeatherLifeStyle;
         });
+      } else {
+        BotToast.showText(text:"加载异常，请重试");
       }
     } catch (error) {
       if (error.toString().contains("TIMEOUT")) {
@@ -309,15 +313,25 @@ class HomeState extends State<Home> {
                       Container(
                         margin: EdgeInsets.only(top: 10),
                         width: double.infinity,
-                        height: 65.0 *3,
+                        constraints: BoxConstraints(
+                          minHeight: 65.0*4,
+                        ),
+                        height: 65.0*2,
                         decoration: BoxDecoration(
                           color: Color(0xffffffff).withOpacity(0.1),
                           borderRadius: BorderRadius.circular(12.0)
                         ),
-                        child: Column(
-                          children: [
-                            
-                          ]
+                        child: GridView(
+                          physics: NeverScrollableScrollPhysics(),
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3, //横轴三个子widget
+                            childAspectRatio: 1.2 //宽高比为1时，子widget
+                          ),
+                          children: lifestyle != null ? lifestyle.lifestyle.where((item) {
+                            return styleTypeIcon[item.type] != null;
+                          }).map((i) {
+                            return LifeStyleItem(lifestyle: i);
+                          }).toList(): [],
                         ),
                       ),
                       Container(
@@ -660,4 +674,63 @@ class WeatherItem extends StatelessWidget {
     );
     
   }
+}
+  final Map<String, dynamic> styleTypeIcon = {
+    'comf': {
+      'name': '舒适度: ',
+      'icon': Icon(Icons.settings_brightness, color: Colors.white),
+    },
+    'cw': {
+      'name': '洗车: ',
+      'icon': Icon(Icons.local_car_wash, color: Colors.white),
+    },
+    'drsg': {
+      'name': '穿衣: ',
+      'icon': Icon(Icons.wc, color: Colors.white),
+    },
+    'flu': {
+      'name': '感冒: ',
+      'icon': Icon(Icons.hotel, color: Colors.white),
+    },
+    'sport': {
+      'name': '运动: ',
+      'icon': Icon(Icons.directions_run, color: Colors.white),
+    },
+    'uv': {
+      'name': '紫外线: ',
+      'icon': Icon(Icons.brightness_5, color: Colors.white),
+    },
+  };
+class LifeStyleItem extends StatelessWidget {
+
+  LifeStyleItem({
+    this.lifestyle
+  }):super();
+
+  final LifeStyle lifestyle;
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    return lifestyle != null ? GestureDetector(
+        onTap: () {
+          BotToast.showText(text: lifestyle.txt);
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            styleTypeIcon[lifestyle.type]['icon'],
+            
+            Text(styleTypeIcon[lifestyle.type]["name"] + lifestyle.brf, style: TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.w300,
+                decoration: TextDecoration.none
+              )
+            ).setPadding(padding: EdgeInsets.only(top: 8))
+          ],),
+    ) : Column();
+  }
+
 }

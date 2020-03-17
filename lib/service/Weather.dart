@@ -52,10 +52,20 @@ class Weather {
   Future<List<dynamic>> getNowAndForecast({
     Map<String, dynamic> query,
   }) async {
-    List r = await Future.wait([getWeather(query: query, type: "now"), getWeather(query: query, type: "forecast")]);
+    List r = await Future.wait([
+      getWeather(query: query, type: "now"), 
+      getWeather(query: query, type: "forecast"),
+      getWeather(query: query, type: "hourly"),
+      getWeather(query: query, type: "lifestyle")]);
 
-    return [WeatherNow.fromJson(r[0]['HeWeather6'][0]), WeatherForecast.fromJson(r[1]['HeWeather6'][0])];
-    // return r;
+    print(r[3]);
+
+    return [
+      WeatherNow.fromJson(r[0]['HeWeather6'][0]), 
+      WeatherForecast.fromJson(r[1]['HeWeather6'][0]),
+      WeatherHourly.fromJson(r[2]['HeWeather6'][0]),
+      WeatherLifeStyle.fromJson(r[3]['HeWeather6'][0])
+    ];
   }
 
   /// 格式化参数
