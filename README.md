@@ -10,3 +10,4 @@ flutter run
 
 ## 预览
 <img src="./preview.jpg" height="960" width="443" >
+<img src="./preview2.jpg" height="960" width="443" >
