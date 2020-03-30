@@ -474,7 +474,6 @@ class AppHeaderState extends State<AppHeader> {
   @override
   Widget build(BuildContext context) {
     double statusBar = MediaQuery.of(context).padding.top;
-    print(widget.status);
     return Container(
       width: double.infinity,
       
